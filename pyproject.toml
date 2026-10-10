@@ -11,6 +11,9 @@ requires-python = ">=3.8"
 license = { text = "MIT" }
 classifiers = [
     "Development Status :: 5 - Production/Stable", # Signal that this package is complete
+	"Programming Language :: Python :: 2.4",
+	"Programming Language :: Python :: 2.5",
+	"Programming Language :: Python :: 2.6",
 	"Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.0",
