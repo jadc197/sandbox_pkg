@@ -1,3 +1,12 @@
+# ⚠️ PROJECT STATUS NOTICE
+This package is now architecturally mature, complete, and stable. 
+To ensure future-proof automated testing and open-source maintenance, the active home of this project has moved to GitHub.
+
+*   **New Home / Issues / PRs:** [https://github.com/jadc197/sandbox-pkg](https://github.com/jadc197/sandbox-pkg)
+*   **PyPI Releases:** Verified and deployed natively via GitHub Actions.
+
+*Please do not open issues or submit code updates on this Gitea instance.*
+
 # Blueprint: Migrating a Mature Python Package from Gitea to GitHub for Automated Active Stewardship
 
 This guide provides a comprehensive, beginner-friendly walkthrough to safely migrate a Python package from a private, self-hosted Gitea instance over to a public or private GitHub repository. 
