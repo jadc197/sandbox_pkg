@@ -39,3 +39,8 @@ dependencies = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sandbox_pkg"]
+
+[tool.pytest]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+testpaths = ["tests"]
+xfail_strict = true
