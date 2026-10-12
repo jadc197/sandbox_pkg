@@ -15,3 +15,9 @@ updates:
     #     versions: ["1.0.0"]
     # This section is customizable and allows you to ignore specific dependencies or versions.
     # It's commented out for now, as per the instructions.
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      # Check for updates to GitHub Actions every week
+      interval: "weekly"
