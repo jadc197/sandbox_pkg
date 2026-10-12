@@ -27,6 +27,10 @@ def main():
         if eol_date >= today:
             supported.append(release["cycle"])
 
+    supported.sort(
+        key=lambda version: tuple(map(int, version.split(".")))
+    )
+
     print(json.dumps(supported, indent=2))
 
 
