@@ -6,7 +6,7 @@ def hello_sandbox():
 
     payload = "This package is safely running under GitHub Active Stewardship!"
 
-    print(payload)
+    print("This is the payload: ", payload)
 
     print(np.version.version)
 
