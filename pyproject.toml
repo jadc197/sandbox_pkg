@@ -41,6 +41,10 @@ addopts = ["-ra", "--strict-config", "--strict-markers"]
 testpaths = ["tests"]
 xfail_strict = true
 
+[tool.ruff]
+# Disable formatting in Markdown files
+extend-exclude = ["*.md"]
+
 [tool.semantic_release]
 version_toml = [
     "pyproject.toml:project.version"
