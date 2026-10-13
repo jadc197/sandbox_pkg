@@ -44,6 +44,12 @@ dependencies = [
 	"numpy == 2.0",
 ] # Add upstream packages here if necessary
 
+[project.optional-dependencies]
+test = [
+	"pytest",
+	"pytest-cov",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/sandbox_pkg"]
 
