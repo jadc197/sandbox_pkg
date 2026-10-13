@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "yourname-sandbox-pkg"  # Give it a unique prefix to prevent collisions on TestPyPI
+name = "sandbox_pkg"  # Give it a unique prefix to prevent collisions on TestPyPI
 version = "1.0.0"
 description = "A mature sandbox package migrating from Gitea to GitHub"
 readme = "README.md"
@@ -41,7 +41,7 @@ classifiers = [
 ]
 
 dependencies = [
-	"numpy == 2.0",
+	"numpy == 2.2.6",
 ] # Add upstream packages here if necessary
 
 [project.optional-dependencies]
@@ -57,3 +57,11 @@ packages = ["src/sandbox_pkg"]
 addopts = ["-ra", "--strict-config", "--strict-markers"]
 testpaths = ["tests"]
 xfail_strict = true
+
+[tool.semantic_release]
+version_toml = [
+    "pyproject.toml:project.version"
+]
+branch = "main"
+commit_parser = "conventional"
+build_command = "pip install build && python -m build"

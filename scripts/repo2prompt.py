@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 from pathlib import Path
@@ -29,7 +31,11 @@ def generate_xml_context(
     default_root = script_dir.parent if script_dir.name == "scripts" else script_dir
 
     target_root = default_root if root_dir is None else Path(root_dir).resolve()
-    out_path = target_root / "repo_context.xml" if output_file is None else Path(output_file).resolve()
+    out_path = (
+        target_root / "repo_context.xml"
+        if output_file is None
+        else Path(output_file).resolve()
+    )
 
     if not target_root.is_dir():
         print(f"❌ Error: The directory '{target_root}' does not exist.")
@@ -60,7 +66,7 @@ def generate_xml_context(
         script_path.name,
         "repo2prompt.py",
         "repo_to_prompt.py",
-#        "AGENTS.md",
+        #        "AGENTS.md",
     }
     allowed_extensions = {
         ".py",
@@ -116,7 +122,7 @@ def generate_xml_context(
                     xml_output.append(f'    <file path="{file_path}">')
                     xml_output.append(content)
                     xml_output.append("    </file>")
-                except Exception as e:
+                except OSError as e:
                     print(f"Skipping {file_path} due to error: {e}")
 
     xml_output.append("  </source_files>")
@@ -152,7 +158,7 @@ def generate_xml_context(
 if __name__ == "__main__":
     # first generate the repo_tree.md:
     os.system("tree .. > ../repo_tree.md")
-    
-    #target_path = sys.argv[1] if len(sys.argv) > 1 else None
+
+    # target_path = sys.argv[1] if len(sys.argv) > 1 else None
     target_path = None
     generate_xml_context(target_path)

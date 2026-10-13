@@ -1,12 +1,10 @@
 from pathlib import Path
 
 import tomlkit
-
 from get_nonEOL_Python import (
     get_non_eol_python_versions,
     get_python_releases,
 )
-
 
 ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT_FILE = ROOT / "pyproject.toml"
@@ -25,9 +23,7 @@ def update_pyproject():
     api_versions = {release["cycle"] for release in releases}
     eol_versions = api_versions - set(versions)
 
-    document = tomlkit.parse(
-        PYPROJECT_FILE.read_text(encoding="utf-8")
-    )
+    document = tomlkit.parse(PYPROJECT_FILE.read_text(encoding="utf-8"))
     project = document["project"]
 
     project["requires-python"] = f">={versions[0]}"
@@ -38,7 +34,7 @@ def update_pyproject():
         classifier = classifiers[i]
 
         if classifier.startswith(PYTHON_CLASSIFIER_PREFIX):
-            version = classifier[len(PYTHON_CLASSIFIER_PREFIX):]
+            version = classifier[len(PYTHON_CLASSIFIER_PREFIX) :]
 
             if version not in api_versions or version in eol_versions:
                 del classifiers[i]

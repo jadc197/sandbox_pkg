@@ -1,0 +1,106 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # 1. Full QA & Security Gatekeeper
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: "pip" # Speeds up subsequent runs automatically
+
+      - name: Install dependencies & package
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev,test]
+
+      # --- LINTING & FORMATTING ---
+      - name: Run Ruff Linting
+        run: ruff check .
+
+      - name: Run Ruff Format Check
+        run: ruff format --check .
+
+      # --- STATIC TYPE CHECKING ---
+      - name: Run Mypy Type Checker
+        run: mypy src/  # Adjust path to your package source directory if different
+
+      # --- SECURITY SCANNING ---
+      - name: Run Dependency Vulnerability Audit
+        run: pip-audit
+
+      # --- TESTING ---
+      - name: Run Test Suite
+        run: pytest
+
+  # 2. Semantic Release (Bumps version, updates changelog, creates GitHub Release)
+  release:
+    needs: qa
+    runs-on: ubuntu-latest
+    concurrency: release
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Python Semantic Release
+        uses: python-semantic-release/python-semantic-release@v10.7.0
+        id: semantic-release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save Release Status
+        id: release-info
+        run: |
+          echo "released=${{ steps.semantic-release.outputs.released }}" >> $GITHUB_OUTPUT
+          echo "tag=${{ steps.semantic-release.outputs.tag }}" >> $GITHUB_OUTPUT
+
+    outputs:
+      released: ${{ steps.release-info.outputs.released }}
+      tag: ${{ steps.release-info.outputs.tag }}
+
+  # 3. Publish to TestPyPI (Triggers only when a new release is generated)
+  publish-testpypi:
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/sandbox_pkg
+    permissions:
+      id-token: write # Required for Trusted Publishing
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Build package distributions
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+          python -m build
+
+      - name: Publish package to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
