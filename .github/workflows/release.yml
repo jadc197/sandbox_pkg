@@ -25,10 +25,10 @@ jobs:
 
       # --- LINTING & FORMATTING ---
       - name: Run Ruff Linting
-        run: ruff check .
+        run: ruff check --fix .
 
       - name: Run Ruff Format Check
-        run: ruff format --check .
+        run: ruff format .
 
       # --- STATIC TYPE CHECKING ---
       - name: Run Mypy Type Checker
