@@ -18,7 +18,7 @@ jobs:
             uses: actions/checkout@v4
 
           - name: Run EOL script to update pyproject.toml
-            run: python3 scripts/update_supported_python_versions.py
+            run: python3 scripts/update_pyproject_python.py
 
           # No setup-python needed! We use the runner's native system python3,
           # which automatically evolves with future Python releases (3.x, 4.x, etc.).

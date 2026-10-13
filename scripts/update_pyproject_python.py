@@ -8,7 +8,7 @@ from get_nonEOL_Python import (
 )
 
 
-ROOT = Path(__file__).resolve().parent#.parent
+ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT_FILE = ROOT / "pyproject.toml"
 
 PYTHON_CLASSIFIER_PREFIX = "Programming Language :: Python :: "
