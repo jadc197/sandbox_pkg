@@ -22,8 +22,8 @@ def update_pyproject():
     if not versions:
         raise RuntimeError("No non-EOL Python versions were found.")
 
-    all_versions = {release["cycle"] for release in releases}
-    eol_versions = all_versions - set(versions)
+    api_versions = {release["cycle"] for release in releases}
+    eol_versions = api_versions - set(versions)
 
     document = tomlkit.parse(
         PYPROJECT_FILE.read_text(encoding="utf-8")
@@ -37,11 +37,11 @@ def update_pyproject():
     for i in range(len(classifiers) - 1, -1, -1):
         classifier = classifiers[i]
 
-        if (
-            classifier.startswith(PYTHON_CLASSIFIER_PREFIX)
-            and classifier[len(PYTHON_CLASSIFIER_PREFIX):] in eol_versions
-        ):
-            del classifiers[i]
+        if classifier.startswith(PYTHON_CLASSIFIER_PREFIX):
+            version = classifier[len(PYTHON_CLASSIFIER_PREFIX):]
+
+            if version not in api_versions or version in eol_versions:
+                del classifiers[i]
 
     PYPROJECT_FILE.write_text(
         tomlkit.dumps(document),
