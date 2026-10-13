@@ -44,10 +44,7 @@ dependencies = [
 	"numpy == 2.0",
 ] # Add upstream packages here if necessary
 
-[projct.optional-dependencies]
-maintenance = [
-	"tomlkit",
-]
+[project.optional-dependencies]
 test = [
 	"pytest",
 	"pytest-cov",
