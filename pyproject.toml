@@ -41,7 +41,7 @@ classifiers = [
 ]
 
 dependencies = [
-	"numpy == 2.0",
+	"numpy == 2.2.6",
 ] # Add upstream packages here if necessary
 
 [project.optional-dependencies]
