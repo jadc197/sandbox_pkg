@@ -7,26 +7,13 @@ name = "yourname-sandbox-pkg"  # Give it a unique prefix to prevent collisions o
 version = "1.0.0"
 description = "A mature sandbox package migrating from Gitea to GitHub"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 classifiers = [
     "Development Status :: 5 - Production/Stable", # Signal that this package is complete
 	"Programming Language :: Python :: 2.4",
 	"Programming Language :: Python :: 2.5",
-	"Programming Language :: Python :: 2.6",
-	"Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.0",
-	"Programming Language :: Python :: 3.1",
-	"Programming Language :: Python :: 3.2",
-	"Programming Language :: Python :: 3.3",
-	"Programming Language :: Python :: 3.4",
-	"Programming Language :: Python :: 3.5",
-	"Programming Language :: Python :: 3.6",
-	"Programming Language :: Python :: 3.7",
-	"Programming Language :: Python :: 3.8",
-	"Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",

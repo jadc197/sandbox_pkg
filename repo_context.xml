@@ -1,0 +1,580 @@
+<repository>
+  <structure>
+    <file_path>activate.bat</file_path>
+    <file_path>AGENTS.md</file_path>
+    <file_path>LICENSE</file_path>
+    <file_path>pyproject.toml</file_path>
+    <file_path>README.md</file_path>
+    <file_path>repo_tree.md</file_path>
+    <file_path>requirements.txt</file_path>
+    <file_path>scripts\get_nonEOL_Python.py</file_path>
+    <file_path>scripts\pyproject.toml.bak</file_path>
+    <file_path>scripts\update_pyproject_python.py</file_path>
+    <file_path>src\sandbox_pkg\__init__.py</file_path>
+    <file_path>tests\test_hello_sandbox.py</file_path>
+  </structure>
+  <source_files>
+    <file path="AGENTS.md">
+You are an expert senior python, C and dsp software engineer acting as an autonomous pair programmer.
+
+Our development methodology of choice is Test Driven Development (TDD): you must strictly and always follow this programming paradigm. In addition, we must adhere to one coherent behavioural change per commit. Suggest only the commit message as a string for the message only, ready to copy and paste to a git client GUI. No need to show the complete CLI git command. When working on chore and build aspects of the project (outside the actual product develoipment, such as a Python package), ignore this TDD directive but do adhere to the git commit practice.
+
+The user will provide repository context by attaching an XML file `repo_context.xml` containing the project structure and source code. 
+
+### CONTEXT PROCESSING INSTRUCTIONS
+1. Always discard previous versions of the provided attachements such as the files `AGENTS.md` and `repo_context.xml`. Do not assume that you already have the necessary content.
+2. Always parse the `<structure>` block first to build a mental map of the folder layout and architecture.
+3. Locate specific file contents encapsulated inside individual `<file path="...">...</file>` tags under `<source_files>`.
+4. Never guess or assume file contents if a path exists in the structure but its file contents are omitted; instead, explicitly ask the user to provide that file.
+
+### RESPONSE GUIDELINES
+1. **Architectural Alignment:** Match the exact coding patterns, linting styles, naming conventions, and architectural paradigms (e.g., functional vs. OOP, specific error handling) found in the provided context. If something is unclear or information is missing do not guess, ask the user instead.
+2. **Precision Edits:** When proposing modifications to an existing file, always show me the exact file path (e.g., `// File: src/components/Button.tsx`). Use clear diffs or fully rewritten functions so the changes are unambiguous. Suggest git commit messages according to "Conventional Commits" best practices and recommendations.
+3. **Dependency Awareness:** Verify existing dependencies via package manifests (`package.json`, `pyproject.toml`, etc.) present in the XML before suggesting new libraries.
+
+### DOCSTRING & DOCUMENTATION POLICY
+1. **Formatting Standard:** All Python docstrings must strictly follow the **NumPy Docstring Standard** (compatible with Sphinx `napoleon` and MkDocs `mkdocstrings`).
+2. **Section Structure:**
+   - **Summary Line:** Short, one-line explanation of function/class purpose.
+   - **Parameters:** List each argument with its name, type, default value (if any), and physical description/units where applicable.
+   - **Returns:** State return type and descriptive breakdown.
+   - **Notes:** Where relevant include formulas formatted in LaTeX (e.g., `$f_m = f_r \\cdot G^{x/b}$`) and other adequate knowledge references.
+3. **Coverage:** Required for all public modules, classes, methods, and non-trivial internal helpers.
+4. **Use of backlash** If a docstring contains backlash characters, such as in a LaTeX formula, prepend an r do the docstring to make it a rawstring and prevent warnings about decrepecated escape characters.
+
+    </file>
+    <file path="pyproject.toml">
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "yourname-sandbox-pkg"  # Give it a unique prefix to prevent collisions on TestPyPI
+version = "1.0.0"
+description = "A mature sandbox package migrating from Gitea to GitHub"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+classifiers = ["Development Status :: 5 - Production/Stable", "Programming Language :: Python :: 2.4", "Programming Language :: Python :: 2.5", "Programming Language :: Python :: 2.6", "Programming Language :: Python :: 2.7", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14"]
+
+dependencies = [
+	"numpy == 2.0",
+] # Add upstream packages here if necessary
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sandbox_pkg"]
+
+[tool.pytest]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+testpaths = ["tests"]
+xfail_strict = true
+
+    </file>
+    <file path="README.md">
+# ⚠️ PROJECT STATUS NOTICE
+This package is now architecturally mature, complete, and stable. 
+To ensure future-proof automated testing and open-source maintenance, the active home of this project has moved to GitHub.
+
+*   **New Home / Issues / PRs:** [https://github.com/jadc197/sandbox-pkg](https://github.com/jadc197/sandbox-pkg)
+*   **PyPI Releases:** Verified and deployed natively via GitHub Actions.
+
+*Please do not open issues or submit code updates on this Gitea instance.*
+
+# Blueprint: Migrating a Mature Python Package from Gitea to GitHub for Automated Active Stewardship
+
+This guide provides a comprehensive, beginner-friendly walkthrough to safely migrate a Python package from a private, self-hosted Gitea instance over to a public or private GitHub repository. 
+
+Our strategy changes the project's posture from **active internal development** to a low-touch **"set-and-forget" active stewardship model**. By moving to GitHub, you gain access to zero-maintenance automation tools that track security vulnerabilities, run scheduled compatibility tests against new Python releases, and handle secure publishing without you having to touch your local development environment or manage static API tokens.
+
+To practice this risk-free, we will use a **sandbox / mockup name** throughout this guide (`sandbox-pkg`).
+
+---
+
+## Phase 1: Understanding Active Stewardship vs. Abandonment
+
+Before touching any code, it is important to understand why this move matters for a "finished" project:
+
+*   **The Software Illusion:** A Python package is rarely an isolated island. Even if your core logic has zero bugs, the Python environment around it changes. New Python versions (e.g., 3.13, 3.14) come out yearly, and dependencies update. 
+*   **Active Stewardship:** This means setting up automated systems that verify your project remains fully functional against changing ecosystems, alerts you to security flaws (CVEs), and provides a transparent communication signal to your users that the code is deliberately finalized, not neglected.
+*   **The Advantage of GitHub:** By shifting your stable projects to GitHub, you leverage free cloud-hosted computing (GitHub Actions) and automated security alerts (Dependabot), eliminating the need to maintain your own local Gitea build runners for low-frequency testing.
+
+---
+
+## Phase 2: Preparing Your Workspace & Git Client Layout
+
+To ensure you do not mix up your self-hosted Gitea setup and your new public GitHub space inside your Git GUI client (such as SourceTree or Git Cola), we will use explicit naming patterns.
+
+### 1. Rename Your Git Remotes
+By default, cloning a repository names the server endpoint `origin`. Having two endpoints named `origin` creates confusion. We will rename them to match their actual service names.
+
+Open your command line inside your local project repository directory and execute:
+```bash
+# Rename the existing Gitea connection from 'origin' to 'gitea'
+git remote rename origin gitea
+```
+
+### 2. Configure Your Git GUI Client for Visual Clarity
+*   **In SourceTree:** Go to the Repository settings or sidebar. You will see your remote branches grouped beautifully under a `gitea/` dropdown rather than an ambiguous `origin/`. You can create bookmark folders named `[Internal Gitea - ARCHIVED]` and `[Public GitHub - ACTIVE]` to group your projects visually.
+*   **In Git Cola:** The push/pull dialog interface will now clearly ask you to target the `gitea` remote or the `github` remote explicitly.
+
+---
+
+## Phase 3: The Order of Operations for Closing Down Gitea
+
+To ensure internal developers have an unbroken trail to follow, you must write your migration notices **before** locking your Gitea repository.
+
+### Step 1: Update Your Documentation Locally
+Open your local project files on your workstation. Add a prominent notice right at the top of your `README.md` file:
+
+```markdown
+# ⚠️ PROJECT STATUS NOTICE
+This package is now architecturally mature, complete, and stable. 
+To ensure future-proof automated testing and open-source maintenance, the active home of this project has moved to GitHub.
+
+*   **New Home / Issues / PRs:** [https://github.com/YOUR_ORGANIZATION/sandbox-pkg](https://github.com/YOUR_ORGANIZATION/sandbox-pkg)
+*   **PyPI Releases:** Verified and deployed natively via GitHub Actions.
+
+*Please do not open issues or submit code updates on this Gitea instance.*
+```
+
+### Step 2: Push the Final Documentation State to Gitea
+With the Gitea instance still unlocked, push this final edit to your repository:
+```bash
+git push gitea main
+```
+
+### Step 3: Archive Your Gitea Repository
+1. Open your web browser and navigate to your project repository page on your **Gitea** web instance.
+2. Click on **Settings** located in the top-right options bar of the repository layout.
+3. Scroll all the way down to the bottom section labeled **Danger Zone**.
+4. Click the button labeled **Archive this repository**.
+
+> **What this does:** Gitea appends a highly visible `[Archived]` tag next to the project header. It converts the entire repository to a strict read-only mode. All write configurations are permanently blocked, issue creation is frozen, and any developer trying to force a push via terminal will receive a server error rejection: `Git: Repository is archived and read-only.`
+
+---
+
+## Phase 4: Migrating Your History to GitHub
+
+Now that Gitea is locked, your project history will be moved over to GitHub to host its active maintenance cycle.
+
+### Step 1: Create a Fresh Repository on GitHub
+1. Log in to [GitHub](https://github.com/).
+2. Click **New Repository**.
+3. Name your repository exactly matching your sandbox name (`sandbox-pkg`).
+4. **Important:** Do *not* check any boxes for initializing the repository with a README, `.gitignore`, or a License. Keep the repository completely blank.
+
+### Step 2: Push Your Local Repository to GitHub
+On your workstation terminal, register the second remote destination as `github` and push all your commit history and historical release tags:
+
+```bash
+# Register the empty GitHub repository as your secondary remote alias
+git remote add github git@github.com:YOUR_ORGANIZATION/sandbox-pkg.git
+
+# Push all historical branches to GitHub
+git push github --all
+
+# Push all release tags to GitHub
+git push github --tags
+```
+
+### Step 3: Shift Your Local Workspace Target
+Tell your local workstation that all future work (such as occasional patches or structural configuration bumps) should track against GitHub by default instead of the old archived Gitea server:
+```bash
+git branch --set-upstream-to=github/main main
+```
+
+---
+
+## Phase 5: Setting Up the Mock Sandbox Environment
+
+To practice your deployment pipelines safely without affecting your production workflows or locking real names on the public index, we will use **TestPyPI**.
+
+### Step 1: Initialize Your Structural Configuration Files
+Your sandbox package needs a clean Python configuration structure to bundle itself correctly. Ensure your local files contain the following blueprint structure:
+
+#### `pyproject.toml`
+This file configures the build system and defines your package's metadata using modern standard layouts instead of legacy `setup.py` scripts.
+
+```toml
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "yourname-sandbox-pkg"  # Give it a unique prefix to prevent collisions on TestPyPI
+version = "1.0.0"
+description = "A mature sandbox package migrating from Gitea to GitHub"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable", # Signal that this package is complete
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [] # Add upstream packages here if necessary
+```
+
+#### `src/sandbox_pkg/__init__.py`
+A bare minimum source file to show that your package contains operational code.
+```python
+def hello_sandbox():
+    return "This package is safely running under GitHub Active Stewardship!"
+```
+
+---
+
+## Phase 6: Configuring Secure Trusted Publishing
+
+Instead of generating a text-based password API key and pasting it manually into GitHub Secrets, we will use **PyPI Trusted Publishing (OIDC)**. This creates a secure connection between your GitHub Action environment and your PyPI namespace, generating short-lived temporary tokens for each upload.
+
+### Step 1: Register on TestPyPI
+1. Open your browser and navigate to the [TestPyPI Registration Page](https://test.pypi.org/).
+2. Create an account and verify your email address.
+
+### Step 2: Register GitHub as a Trusted Publisher
+1. Log into your TestPyPI account dashboard.
+2. Go to your **Account Settings** -> **Publishing** -> Click **Add Publisher**.
+3. Select **GitHub** out of the available providers.
+4. Fill in the following specific parameters:
+    *   **Owner:** Your exact GitHub username or organization name.
+    *   **Repository:** `sandbox-pkg` (Your exact GitHub repository name).
+    *   **Workflow name:** `publish.yml` (The exact name of the file we will make in the next phase).
+    *   **Environment name:** `test-release` (A protected barrier configuration on GitHub).
+5. Click **Add Publisher** to save the binding configuration.
+
+---
+
+## Phase 7: Setting Up Automated CI/CD Actions
+
+With the authentication hooks established on TestPyPI, we will add the automated automation code blocks into our GitHub repository workspace.
+
+Create a nested folder layout in your local project root directory matching: `.github/workflows/`. Inside that folder, create a configuration file named `publish.yml`.
+
+### The `publish.yml` Automation Script
+This workflow code will run on a standard cloud environment every single time you publish a new "Release" tag on GitHub, or on a scheduled time sequence to test system durability.
+
+```yaml
+name: Automated Active Stewardship Pipeline
+
+on:
+  release:
+    types: [published]
+  schedule:
+    # This CRON setting runs automatically every Sunday at midnight.
+    # It ensures that even if you don't push code for a year, your test suite
+    # checks your code against the changing ecosystem.
+    - cron: '0 0 * * 0'
+
+jobs:
+  test:
+    name: Run Python Compatibility Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v4
+
+    - name: Set Up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # If your project has automated tests, install testing dependencies here
+        # e.g., pip install pytest
+
+    - name: Run Tests
+      run: |
+        # Simulate your test runner execution command here
+        python -c "import sys; print('Testing compatibility on Python', sys.version)"
+
+  publish:
+    name: Build and Securely Publish Distro to TestPyPI
+    needs: test
+    if: github.event_name == 'release' # Only upload to TestPyPI if this is an explicit release tag event
+    runs-on: ubuntu-latest
+    environment:
+      name: test-release
+      url: https://test.pypi.org/p/yourname-sandbox-pkg
+
+    permissions:
+      id-token: write  # MANDATORY configuration setting for secure OIDC token handshakes
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v4
+
+    - name: Set Up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Build Packaging Tools
+      run: python -m pip install build --user
+
+    - name: Compile Distribution Tarball and Wheel Binaries
+      run: python -m build
+
+    - name: Publish Package Artifacts to TestPyPI
+      uses: pypa/gh-action-pypa-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/ # Forces the upload to use the Sandbox environment instead of Production PyPI
+```
+
+Commit these additions and push them to GitHub:
+```bash
+git add .
+git commit -m "ci: add pyproject config and automated active stewardship workflow"
+git push github main
+```
+
+---
+
+## Phase 8: Running and Verifying Your First Sandbox Run
+
+### Step 1: Create a Mock Target Release on GitHub
+1. Open your repository workspace view on the **GitHub** website interface.
+2. In the right column panel, find and click the **Releases** link -> **Draft a new release**.
+3. Choose a tag version name (e.g., `v1.0.0`).
+4. Type a title descriptive of the release (e.g., `Initial Mature Release Migration`).
+5. Click the green button labeled **Publish release**.
+
+### Step 2: Track Execution Flow
+1. Click the **Actions** tab located at the top center options bar of your GitHub interface layout.
+2. You will see your pipeline spinning up. Click into the workflow runner view.
+3. Observe the automated matrix checking compatibility across all Python targets (3.10 through 3.13).
+4. Watch the `publish` stage request the secure token configuration directly from TestPyPI and upload the bundle safely.
+
+### Step 3: Test Installation Locally
+Open your command terminal window anywhere outside of your active working repository directory path and test downloading your newborn sandbox package build instantly over the network:
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ yourname-sandbox-pkg
+```
+
+---
+
+## Phase 9: Long-Term Low-Touch Operations
+
+Now that your migration is complete, maintenance becomes effortless:
+
+1. **Dependabot Vulnerability Alerts:** In your GitHub repository settings, turn on **Dependabot security updates**. If any upstream dependency gets a security patch, Dependabot will automatically write a pull request updating your project metadata.
+2. **Read the Docs Automation:** Log into [Read the Docs](https://readthedocs.org/) using your GitHub credentials, import your GitHub repository, and let its native webhooks build and refresh your API documents automatically every single time a release tag is registered on GitHub.
+3. **Weekly Health Checkups:** The `schedule` cron configuration block in your workflow will execute tests silently in the cloud every week. If a future update changes core Python definitions and breaks your mature package syntax, GitHub will send you an analytical email alert instantly. If everything remains stable, your project operates on safe, zero-maintenance cruise control indefinitely.
+
+    </file>
+    <file path="repo_tree.md">
+Folder PATH listing
+Volume serial number is 0000006F F0E5:BCFE
+C:\USERS\JOAO.CARRILHO\DOCUMENTS\REPOS\SANDBOX_PKG
+.github
+   workflows
+.pytest_cache
+   v
+       cache
+scripts
+   __pycache__
+src
+   sandbox_pkg
+       __pycache__
+tests
+    __pycache__
+
+    </file>
+    <file path="requirements.txt">
+pytest
+pytest-cov
+tomlkit
+
+    </file>
+    <file path="scripts\get_nonEOL_Python.py">
+
+import json
+import urllib.request
+from datetime import date, datetime, timezone
+
+API_URL = "https://endoflife.date/api/python.json"
+
+
+def get_python_releases():
+    """Return all Python release data from the endoflife.date API."""
+
+    with urllib.request.urlopen(API_URL, timeout=30) as response:
+        return json.load(response)
+
+
+def get_non_eol_python_versions():
+    """Return Python versions that have not yet reached EOL."""
+
+    releases = get_python_releases()
+    today = datetime.now(timezone.utc).date()
+
+    versions = []
+
+    for release in releases:
+        eol = release.get("eol")
+
+        # Unknown EOL status: retain the version rather than
+        # incorrectly assuming it has reached EOL.
+        if eol is False or eol is None:
+            versions.append(release["cycle"])
+            continue
+
+        eol_date = date.fromisoformat(eol)
+
+        if eol_date >= today:
+            versions.append(release["cycle"])
+
+    versions.sort(
+        key=lambda version: tuple(map(int, version.split(".")))
+    )
+
+    return versions
+
+
+def main():
+    """Print non-EOL Python versions as JSON."""
+
+    print(json.dumps(get_non_eol_python_versions(), indent=2))
+
+
+if __name__ == "__main__":
+    main()
+    </file>
+    <file path="scripts\update_pyproject_python.py">
+#!/usr/bin/env python3
+
+from datetime import date, datetime, timezone
+from pathlib import Path
+
+import tomlkit
+
+from get_nonEOL_Python import get_python_releases
+
+
+ROOT = Path(__file__).resolve().parent.parent
+PYPROJECT_FILE = ROOT / "pyproject.toml"
+
+PYTHON_CLASSIFIER_PREFIX = "Programming Language :: Python :: "
+
+
+def update_pyproject():
+    """Update Python compatibility metadata in pyproject.toml."""
+
+    # Fetch the API data once and reuse it for all calculations.
+    releases = get_python_releases()
+
+    today = datetime.now(timezone.utc).date()
+
+    non_eol_python3_versions = []
+    eol_python3_versions = set()
+
+    for release in releases:
+        version = release["cycle"]
+
+        # This project manages Python 3 compatibility only.
+        if not version.startswith("3."):
+            continue
+
+        eol = release.get("eol")
+
+        # An unknown EOL status is not sufficient reason to remove
+        # a version or classifier.
+        if eol is False or eol is None:
+            non_eol_python3_versions.append(version)
+            continue
+
+        eol_date = date.fromisoformat(eol)
+
+        if eol_date < today:
+            eol_python3_versions.add(version)
+        else:
+            non_eol_python3_versions.append(version)
+
+    if not non_eol_python3_versions:
+        raise RuntimeError(
+            "No non-EOL Python 3 versions were found."
+        )
+
+    # Sort numerically: 3.9 must precede 3.10.
+    non_eol_python3_versions.sort(
+        key=lambda version: tuple(map(int, version.split(".")))
+    )
+
+    minimum_version = non_eol_python3_versions[0]
+
+    document = tomlkit.parse(
+        PYPROJECT_FILE.read_text(encoding="utf-8")
+    )
+    project = document["project"]
+
+    # Update the minimum required Python version.
+    project["requires-python"] = f">={minimum_version}"
+
+    # Remove only version-specific classifiers explicitly confirmed
+    # to have reached EOL.
+    classifiers = project["classifiers"]
+
+    project["classifiers"] = [
+        classifier
+        for classifier in classifiers
+        if not (
+            classifier.startswith(PYTHON_CLASSIFIER_PREFIX)
+            and classifier[len(PYTHON_CLASSIFIER_PREFIX):]
+            in eol_python3_versions
+        )
+    ]
+
+    PYPROJECT_FILE.write_text(
+        tomlkit.dumps(document),
+        encoding="utf-8",
+    )
+
+    print(f"Updated requires-python to >={minimum_version}")
+    
+    sorted_eol_versions = sorted(
+        eol_python3_versions,
+        key=lambda version: tuple(map(int, version.split("."))),
+    )
+
+    print(
+        "Removed classifiers for EOL Python 3 versions: "
+        f"{sorted_eol_versions}"
+    )
+
+
+if __name__ == "__main__":
+    update_pyproject()
+    </file>
+    <file path="src\sandbox_pkg\__init__.py">
+import numpy as np
+
+
+def hello_sandbox():
+    """ This is a docstring """
+    
+    payload = "This package is safely running under GitHub Active Stewardship!"
+    
+    print(payload)
+    
+    print(np.version.version)
+    
+    return payload
+    </file>
+    <file path="tests\test_hello_sandbox.py">
+import sandbox_pkg
+
+def test_resturns_str():
+    assert isinstance(sandbox_pkg.hello_sandbox(), str)
+    </file>
+  </source_files>
+</repository>
